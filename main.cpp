@@ -49,8 +49,8 @@ int main(int argc, char** argv) {
 	stream[1] = &color;
 	puts("Kinect initialization completed");
 
-	
-	namedWindow("Control", CV_WINDOW_AUTOSIZE); //create a window called "Control"
+	// Define HSV for Color1
+	namedWindow("Color1", CV_WINDOW_AUTOSIZE); //create a window called "Control"
 	// Can use trackbars to pick calibrate color of interest.
 	int minHue = 0;
 	int maxHue = 179;
@@ -71,6 +71,34 @@ int main(int argc, char** argv) {
 
 	cvCreateTrackbar("minValue", "Control", &minValue, 255);//Value (0 - 255)
 	cvCreateTrackbar("maxValue", "Control", &maxValue, 255);
+
+
+
+	// Define HSV for Color2
+	namedWindow("Color2", CV_WINDOW_AUTOSIZE); //create a window called "Control"
+	// Can use trackbars to pick calibrate color of interest.
+	int minHue2 = 0;
+	int maxHue2 = 179;
+
+	int minSatur2 = 0;
+	int maxSatur2 = 255;
+
+	int minValue2 = 0;
+	int maxValue2 = 255;
+
+
+	//Create trackbars in "Control" window
+	cvCreateTrackbar("minHue", "Control", &minHue2, 179); //Hue (0 - 179)
+	cvCreateTrackbar("maxHue", "Control", &maxHue2, 179);
+
+	cvCreateTrackbar("minSatur", "Control", &minSatur2, 255); //Saturation (0 - 255)
+	cvCreateTrackbar("maxSatur", "Control", &maxSatur2, 255);
+
+	cvCreateTrackbar("minValue", "Control", &minValue2, 255);//Value (0 - 255)
+	cvCreateTrackbar("maxValue", "Control", &maxValue2, 255);
+
+
+
 	
 
 	if (device.getSensorInfo(SENSOR_DEPTH) != NULL)
@@ -104,6 +132,7 @@ int main(int argc, char** argv) {
 				{
 					colorcv.data = (uchar*)colorFrame.getData();
 					detectColor(colorcv, minHue, minSatur, minValue, maxHue, maxSatur, maxValue);
+					detectColor(colorcv, minHue2, minSatur2, minValue2, maxHue2, maxSatur2, maxValue2);
 					cv::cvtColor(colorcv, colorcv, CV_BGR2RGB);
 					cv::imshow("RGB", colorcv);
 				}
