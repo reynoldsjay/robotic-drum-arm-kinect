@@ -7,7 +7,7 @@
 using namespace openni;
 using namespace cv;
 
-void detectColor(Mat imgOrig);
+void detectColor(Mat img, int minHue, int minSatur, int minValue, int maxHue, int maxSatur, int maxValue);
 
 int main(int argc, char** argv) {
 
@@ -50,7 +50,28 @@ int main(int argc, char** argv) {
 	puts("Kinect initialization completed");
 
 	
+	namedWindow("Control", CV_WINDOW_AUTOSIZE); //create a window called "Control"
+	// Can use trackbars to pick calibrate color of interest.
+	int minHue = 0;
+	int maxHue = 179;
 
+	int minSatur = 0;
+	int maxSatur = 255;
+
+	int minValue = 0;
+	int maxValue = 255;
+
+	
+	//Create trackbars in "Control" window
+	cvCreateTrackbar("minHue", "Control", &minHue, 179); //Hue (0 - 179)
+	cvCreateTrackbar("maxHue", "Control", &maxHue, 179);
+
+	cvCreateTrackbar("minSatur", "Control", &minSatur, 255); //Saturation (0 - 255)
+	cvCreateTrackbar("maxSatur", "Control", &maxSatur, 255);
+
+	cvCreateTrackbar("minValue", "Control", &minValue, 255);//Value (0 - 255)
+	cvCreateTrackbar("maxValue", "Control", &maxValue, 255);
+	
 
 	if (device.getSensorInfo(SENSOR_DEPTH) != NULL)
 	{
@@ -82,7 +103,7 @@ int main(int argc, char** argv) {
 				if (colorFrame.isValid())
 				{
 					colorcv.data = (uchar*)colorFrame.getData();
-					detectColor(colorcv);
+					detectColor(colorcv, minHue, minSatur, minValue, maxHue, maxSatur, maxValue);
 					cv::cvtColor(colorcv, colorcv, CV_BGR2RGB);
 					cv::imshow("RGB", colorcv);
 				}
@@ -106,45 +127,16 @@ int main(int argc, char** argv) {
 
 } 
 
-void detectColor(Mat img) {
-	// namedWindow("Control", CV_WINDOW_AUTOSIZE); //create a window called "Control"
-	// Can use trackbars to pick calibrate color of interest.
-	int minHue = 140;
-	int maxHue = 179;
-
-	int minSatur = 30;
-	int maxSatur = 255;
-
-	int minValue = 0;
-	int maxValue = 255;
-
-	/*
-	//Create trackbars in "Control" window
-	cvCreateTrackbar("minHue", "Control", &minHue, 179); //Hue (0 - 179)
-	cvCreateTrackbar("maxHue", "Control", &maxHue, 179);
-
-	cvCreateTrackbar("minSatur", "Control", &minSatur, 255); //Saturation (0 - 255)
-	cvCreateTrackbar("maxSatur", "Control", &maxSatur, 255);
-
-	cvCreateTrackbar("minValue", "Control", &minValue, 255);//Value (0 - 255)
-	cvCreateTrackbar("maxValue", "Control", &maxValue, 255);
-	*/
+void detectColor(Mat img, int minHue, int minSatur, int minValue, int maxHue, int maxSatur, int maxValue) {
+	
 	
 		Mat imgHSV;
 		Mat imgBin;
 
-		/*bool bSuccess = imgOrig.read(imgOrig); // read a new frame from video
-
-		if (!bSuccess) //if not success, break loop
-		{
-			//cout << "Cannot read a frame from video stream" << endl;
-			break;
-		}
-		*/
+		
 
 		// Convert from BGR to HSV
 		cvtColor(img, imgHSV, COLOR_BGR2HSV);
-		puts("Passed cvtColor\r\n");
 		
 		inRange(imgHSV, Scalar(minHue, minSatur, minValue), Scalar(maxHue, maxSatur, maxValue), imgBin); //Threshold the image
 
