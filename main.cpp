@@ -7,6 +7,8 @@
 using namespace openni;
 using namespace cv;
 
+void detectColor(Mat imgOrig);
+
 int main(int argc, char** argv) {
 
 	OpenNI::initialize();
@@ -42,9 +44,12 @@ int main(int argc, char** argv) {
 	//device.setImageRegistrationMode( openni::IMAGE_REGISTRATION_DEPTH_TO_COLOR );
 
 	VideoStream** stream = new VideoStream*[2];
+	
 	stream[0] = &depth;
 	stream[1] = &color;
 	puts("Kinect initialization completed");
+
+	
 
 
 	if (device.getSensorInfo(SENSOR_DEPTH) != NULL)
@@ -77,6 +82,7 @@ int main(int argc, char** argv) {
 				if (colorFrame.isValid())
 				{
 					colorcv.data = (uchar*)colorFrame.getData();
+					detectColor(colorcv);
 					cv::cvtColor(colorcv, colorcv, CV_BGR2RGB);
 					cv::imshow("RGB", colorcv);
 				}
@@ -99,3 +105,65 @@ int main(int argc, char** argv) {
 	OpenNI::shutdown();
 
 } 
+
+void detectColor(Mat img) {
+	// namedWindow("Control", CV_WINDOW_AUTOSIZE); //create a window called "Control"
+	// Can use trackbars to pick calibrate color of interest.
+	int minHue = 140;
+	int maxHue = 179;
+
+	int minSatur = 30;
+	int maxSatur = 255;
+
+	int minValue = 0;
+	int maxValue = 255;
+
+	/*
+	//Create trackbars in "Control" window
+	cvCreateTrackbar("minHue", "Control", &minHue, 179); //Hue (0 - 179)
+	cvCreateTrackbar("maxHue", "Control", &maxHue, 179);
+
+	cvCreateTrackbar("minSatur", "Control", &minSatur, 255); //Saturation (0 - 255)
+	cvCreateTrackbar("maxSatur", "Control", &maxSatur, 255);
+
+	cvCreateTrackbar("minValue", "Control", &minValue, 255);//Value (0 - 255)
+	cvCreateTrackbar("maxValue", "Control", &maxValue, 255);
+	*/
+	
+		Mat imgHSV;
+		Mat imgBin;
+
+		/*bool bSuccess = imgOrig.read(imgOrig); // read a new frame from video
+
+		if (!bSuccess) //if not success, break loop
+		{
+			//cout << "Cannot read a frame from video stream" << endl;
+			break;
+		}
+		*/
+
+		// Convert from BGR to HSV
+		cvtColor(img, imgHSV, COLOR_BGR2HSV);
+		puts("Passed cvtColor\r\n");
+		
+		inRange(imgHSV, Scalar(minHue, minSatur, minValue), Scalar(maxHue, maxSatur, maxValue), imgBin); //Threshold the image
+
+		//morphological opening (removes noise from the foreground)		
+		erode(imgBin, imgBin, getStructuringElement(MORPH_ELLIPSE, Size(3, 3)));
+		dilate(imgBin, imgBin, getStructuringElement(MORPH_ELLIPSE, Size(3, 3)));
+
+		//morphological closing (removes small holes from the foreground)
+		dilate(imgBin, imgBin, getStructuringElement(MORPH_ELLIPSE, Size(3, 3)));
+		erode(imgBin, imgBin, getStructuringElement(MORPH_ELLIPSE, Size(3, 3)));
+
+		imshow("Thresholded Image", imgBin); //show the thresholded image
+		//imshow("Original", imgOrig); //show the original image
+		
+		/*
+		if (waitKey(30) == 27) //wait for 'esc' key press for 30ms. If 'esc' key is pressed, break loop
+		{
+			//cout << "esc key is pressed by user" << endl;
+			break;
+		} 
+		*/
+	}
