@@ -3,7 +3,7 @@
 void Client::sendAngle1(float x) {
  
 	UdpSocket sock;
-	sock.connectTo("192.168.2.4", PORT_NUM);
+	sock.connectTo("128.61.70.169", PORT_NUM);
 	if (!sock.isOk()) {
 		cerr << "Error connection to port " << PORT_NUM << ": " << sock.errorMessage() << "\n";
 	}
@@ -15,8 +15,8 @@ void Client::sendAngle1(float x) {
 		PacketWriter pw;
 		pw.startBundle().startBundle().addMessage(msg).endBundle().endBundle();
 		bool ok = sock.sendPacket(pw.packetData(), pw.packetSize());
-		cout << "Client: sent /ping " << iping++ << ", ok=" << ok << "\n";
-		cout << "sock error: " << sock.errorMessage() << " -- is the server running?\n";
+		//cout << "Client: sent /ping " << iping++ << ", ok=" << ok << "\n";
+		//cout << "sock error: " << sock.errorMessage() << " -- is the server running?\n";
 	}
 
 }
@@ -24,7 +24,7 @@ void Client::sendAngle1(float x) {
 void Client::sendAngle2(float x) {
 
 	UdpSocket sock;
-	sock.connectTo("192.168.2.4", PORT_NUM);
+	sock.connectTo("128.61.70.169", PORT_NUM);
 	if (!sock.isOk()) {
 		cerr << "Error connection to port " << PORT_NUM << ": " << sock.errorMessage() << "\n";
 	}
@@ -36,8 +36,8 @@ void Client::sendAngle2(float x) {
 		PacketWriter pw;
 		pw.startBundle().startBundle().addMessage(msg).endBundle().endBundle();
 		bool ok = sock.sendPacket(pw.packetData(), pw.packetSize());
-		cout << "Client: sent /ping " << iping++ << ", ok=" << ok << "\n";
-		cout << "sock error: " << sock.errorMessage() << " -- is the server running?\n";
+		//cout << "Client: sent /ping " << iping++ << ", ok=" << ok << "\n";
+		//cout << "sock error: " << sock.errorMessage() << " -- is the server running?\n";
 	}
 
 }

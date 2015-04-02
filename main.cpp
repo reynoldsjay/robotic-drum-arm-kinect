@@ -173,15 +173,19 @@ int main(int argc, char** argv) {
 			double b2 = sqrt(pow((color1x - drum2x), 2) + pow((color1y - drum2y), 2));
 			double c2 = sqrt(pow((color2x - drum2x), 2) + pow((color2y - drum2y), 2));
 			//printf("srqrt: %f\n", b1);
-			double theta2 = acos((pow(c1, 2) - pow(b1, 2) - pow(a, 2)) / (-2 * a*b1));
+			double theta2 = acos((pow(c2, 2) - pow(b2, 2) - pow(a, 2)) / (-2 * a*b2));
 
 			//printf("%f \n", theta*(180/PI));
 			if (drum1x < color2x) {
 				theta1 = theta1 * -1;
 			}
-			if (drum2x < color2x) {
+			theta2 = theta2 * -1;
+			if (drum2x > color2x) {
 				theta2 = theta2 * -1;
 			}
+
+			printf("angle to drum one: %f\n", theta1*(180/PI));
+			printf("angle to drum two: %f\n", theta2*(180/PI));
 			Client::sendAngle1(theta1);
 			Client::sendAngle2(theta2);
 

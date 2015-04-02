@@ -1,15 +1,13 @@
-﻿Build started 4/2/2015 3:28:00 PM.
+﻿Build started 4/2/2015 4:43:51 PM.
      1>Project "C:\Users\Jay\Desktop\robotic-drum-arm-kinect\robotic-drum-arm-kinect.vcxproj" on node 2 (Build target(s)).
      1>ClCompile:
-         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /I"C:\Program Files\PrimeSense\NiTE2\Include" /IC:\opencv\build\include /I"C:\Program Files (x86)\OpenNI2\Include\\" /I. /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D _CRT_SECURE_NO_WARNINGS /D _MBCS /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt Client.cpp main.cpp
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /I"C:\Program Files\PrimeSense\NiTE2\Include" /IC:\opencv\build\include /I"C:\Program Files (x86)\OpenNI2\Include\\" /I. /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D _CRT_SECURE_NO_WARNINGS /D _MBCS /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt main.cpp
          main.cpp
-     1>c:\users\jay\desktop\robotic-drum-arm-kinect\main.cpp(185): warning C4244: 'argument' : conversion from 'double' to 'float', possible loss of data
-     1>c:\users\jay\desktop\robotic-drum-arm-kinect\main.cpp(186): warning C4244: 'argument' : conversion from 'double' to 'float', possible loss of data
-     1>c:\users\jay\desktop\robotic-drum-arm-kinect\main.cpp(244): warning C4244: '=' : conversion from 'double' to 'int', possible loss of data
-     1>c:\users\jay\desktop\robotic-drum-arm-kinect\main.cpp(245): warning C4244: '=' : conversion from 'double' to 'int', possible loss of data
-     1>c:\users\jay\desktop\robotic-drum-arm-kinect\main.cpp(251): warning C4244: 'argument' : conversion from 'double' to 'int', possible loss of data
-         Client.cpp
-         Generating Code...
+     1>c:\users\jay\desktop\robotic-drum-arm-kinect\main.cpp(189): warning C4244: 'argument' : conversion from 'double' to 'float', possible loss of data
+     1>c:\users\jay\desktop\robotic-drum-arm-kinect\main.cpp(190): warning C4244: 'argument' : conversion from 'double' to 'float', possible loss of data
+     1>c:\users\jay\desktop\robotic-drum-arm-kinect\main.cpp(248): warning C4244: '=' : conversion from 'double' to 'int', possible loss of data
+     1>c:\users\jay\desktop\robotic-drum-arm-kinect\main.cpp(249): warning C4244: '=' : conversion from 'double' to 'int', possible loss of data
+     1>c:\users\jay\desktop\robotic-drum-arm-kinect\main.cpp(255): warning C4244: 'argument' : conversion from 'double' to 'int', possible loss of data
        Link:
          C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\Jay\Desktop\robotic-drum-arm-kinect\Debug\robotic-drum-arm-kinect.exe" /INCREMENTAL /NOLOGO /LIBPATH:"C:\Program Files\PrimeSense\NiTE2\Lib" /LIBPATH:"C:\Program Files (x86)\OpenNI2\Lib\\" /LIBPATH:C:\opencv\build\x86\vc12\lib OpenNI2.lib opencv_core2411d.lib opencv_highgui2411d.lib opencv_imgproc2411d.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /NODEFAULTLIB:libcpmtd.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:\Users\Jay\Desktop\robotic-drum-arm-kinect\Debug\robotic-drum-arm-kinect.pdb" /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\Jay\Desktop\robotic-drum-arm-kinect\Debug\robotic-drum-arm-kinect.lib" /MACHINE:X86 Debug\Client.obj
          Debug\main.obj
@@ -18,4 +16,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:04.57
+Time Elapsed 00:00:01.17
