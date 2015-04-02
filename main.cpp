@@ -3,6 +3,7 @@
 #include <opencv2\imgproc\imgproc.hpp>
 #include <opencv2\highgui\highgui.hpp>
 #include <iostream>
+#include "Client.h"
 
 using namespace openni;
 using namespace cv;
@@ -212,12 +213,11 @@ void detectColor(Mat img, int minHue, int minSatur, int minValue, int maxHue, in
 		posY = moment01 / area;
 
 		// Print it out for debugging purposes
-		printf("position (%d,%d)\n", posX, posY);
+		//printf("position (%d,%d)\n", posX, posY);
 
 
 		circle(imgBin, Point(posX, posY), 32.0, Scalar(0, 255, 255), 1, 8);
-
-
+		Client::sendTheUDP(1.0);
 
 		if (window == 0) {
 			imshow("Threshold Color1", imgBin); //show the thresholded image
