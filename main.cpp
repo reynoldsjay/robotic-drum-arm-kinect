@@ -4,6 +4,9 @@
 #include <opencv2\highgui\highgui.hpp>
 #include <iostream>
 #include "Client.h"
+#include <math.h>
+
+#define PI 3.1415926
 
 using namespace openni;
 using namespace cv;
@@ -15,6 +18,7 @@ void clickDrums(Mat img);
 
 
 int drum1x, drum1y, drum2x, drum2y;
+int color1x, color1y, color2x, color2y;
 
 
 int main(int argc, char** argv) {
@@ -154,6 +158,20 @@ int main(int argc, char** argv) {
 			default:
 				puts("Error retrieving a stream");
 			}
+			
+			double a = sqrt(pow((color1x - color2x), 2) + pow((color1y - color2y), 2));
+			//printf("color diff: %d \n", color1x - color2x);
+			//printf("%f\n", pow((color1x - color2x), 2));
+			//printf("color 1:  %d, %d \n", color1x, color1y);
+			//printf("color 2:  %d, %d \n", color2x, color2y);
+			double b1 = sqrt(pow((color1x - drum1x), 2) + pow((color1y - drum1y), 2));
+			double c1 = sqrt(pow((color2x - drum1x), 2) + pow((color2y - drum1y), 2));
+			//printf("srqrt: %f\n", b1);
+			double theta = acos((pow(c1, 2) - pow(b1,2) - pow(a,2))/(-2*a*b1));
+
+			//printf("%f \n", theta*(180/PI));
+
+
 			cv::waitKey(1);
 		}
 
@@ -217,14 +235,19 @@ void detectColor(Mat img, int minHue, int minSatur, int minValue, int maxHue, in
 
 
 		circle(imgBin, Point(posX, posY), 32.0, Scalar(0, 255, 255), 1, 8);
-		Client::sendTheUDP(1.0);
+
+
+		//Client::sendTheUDP(1.0);
 
 		if (window == 0) {
 			imshow("Threshold Color1", imgBin); //show the thresholded image
+			color1x = posX;
+			color1y = posY;
 		}
-
 		else {
 			imshow("Threshold Color2", imgBin);
+			color2x = posX;
+			color2y = posY;
 		}
 		//imshow("Original", imgOrig); //show the original image
 		
