@@ -21,6 +21,7 @@ const int PORT_NUM = 1235;
 class Client {
 	
 	public:
-		static void sendTheUDP(float x);
+		static void sendAngle1(float x);
+		static void sendAngle2(float x);
 
 };
