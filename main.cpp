@@ -190,6 +190,35 @@ void detectColor(Mat img, int minHue, int minSatur, int minValue, int maxHue, in
 		//morphological closing (removes small holes from the foreground)
 		dilate(imgBin, imgBin, getStructuringElement(MORPH_ELLIPSE, Size(3, 3)));
 		erode(imgBin, imgBin, getStructuringElement(MORPH_ELLIPSE, Size(3, 3)));
+
+		// Calculate the moments to estimate the position of the ball
+		Moments theMoments = moments(imgBin);
+
+		// The actual moment values
+		double moment10 = theMoments.m10;
+		double moment01 = theMoments.m01;
+
+		double area = theMoments.m00;
+
+		static int posX = 0;
+
+		static int posY = 0;
+
+		int lastX = posX;
+
+		int lastY = posY;
+
+		posX = moment10 / area;
+		posY = moment01 / area;
+
+		// Print it out for debugging purposes
+		printf("position (%d,%d)\n", posX, posY);
+
+
+		circle(imgBin, Point(posX, posY), 32.0, Scalar(0, 255, 255), 1, 8);
+
+
+
 		if (window == 0) {
 			imshow("Threshold Color1", imgBin); //show the thresholded image
 		}
