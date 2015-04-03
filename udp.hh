@@ -22,7 +22,7 @@
 
   (this is the zlib license)
 */
-
+#define _WINSOCK_DEPRECATED_NO_WARNINGS
 #ifndef OSCPKT_UDP_HH
 #define OSCPKT_UDP_HH
 
