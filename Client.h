@@ -19,9 +19,11 @@ const int PORT_NUM = 1235;
 //#define PORT 12345   //The port on which to listen for incoming data
 
 class Client {
-	
-	public:
-		static void sendAngle1(float x);
-		static void sendAngle2(float x);
+		
+	UdpSocket sock;
+public:
+	Client();
+	void sendAngle1(float x);
+	void sendAngle2(float x);
 
 };

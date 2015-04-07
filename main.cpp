@@ -131,6 +131,7 @@ int main(int argc, char** argv) {
 
 	puts("Color 2");
 
+	Client client;
 	
 
 	if (device.getSensorInfo(SENSOR_DEPTH) != NULL)
@@ -215,8 +216,8 @@ int main(int argc, char** argv) {
 			printf("angle to drum two: %f\n", theta2*(180/PI));
 
 			// Send the angles in a UDP packet to the specified IP address
-			Client::sendAngle1(theta1);
-			Client::sendAngle2(theta2);
+			client.sendAngle1(theta1);
+			client.sendAngle2(theta2);
 
 
 			cv::waitKey(1);
