@@ -19,6 +19,8 @@ void clickDrums(Mat img);
 // Declare variables for x,y locations of drums, servo, and tip
 int drum1x, drum1y, drum2x, drum2y;
 int servoX, servoY, tipX, tipY;
+bool setDrums;
+unsigned short drum1z, drum2z, tipZ;
 
 
 int main(int argc, char** argv) {
@@ -85,15 +87,21 @@ int main(int argc, char** argv) {
 
 	cvCreateTrackbar("minValue", "Color1", &minValue, 255);//Value (0 - 255)
 	cvCreateTrackbar("maxValue", "Color1", &maxValue, 255);
-
+	
 	minHue = 65;
 	maxHue = 82;
+	cvSetTrackbarPos("minHue", "Color1", minHue);
+	cvSetTrackbarPos("maxHue", "Color1", maxHue);
 
 	minSatur = 45;
 	maxSatur = 150;
+	cvSetTrackbarPos("minSatur", "Color1", minSatur);
+	cvSetTrackbarPos("maxSatur", "Color1", maxSatur);
 
 	minValue = 201;
 	maxValue = 255;
+	cvSetTrackbarPos("minValue", "Color1", minValue);
+	cvSetTrackbarPos("maxValue", "Color1", maxValue);
 
 	puts("Color1");
 
@@ -120,18 +128,26 @@ int main(int argc, char** argv) {
 	cvCreateTrackbar("minValue", "Color2", &minValue2, 255);//Value (0 - 255)
 	cvCreateTrackbar("maxValue", "Color2", &maxValue2, 255);
 
-	minHue2 = 125;
-	maxHue2 = 145;
+	minHue2 = 103;
+	maxHue2 = 137;
+	cvSetTrackbarPos("minHue", "Color2", minHue2);
+	cvSetTrackbarPos("maxHue", "Color2", maxHue2);
 
-	minSatur2 = 117;
+
+	minSatur2 = 83;
 	maxSatur2 = 255;
+	cvSetTrackbarPos("minSatur", "Color2", minSatur2);
+	cvSetTrackbarPos("maxSatur", "Color2", maxSatur2);
 
-	minValue2 = 136;
+
+	minValue2 = 122;
 	maxValue2 = 255;
+	cvSetTrackbarPos("minValue", "Color2", minValue2);
+	cvSetTrackbarPos("maxValue", "Color2", maxValue2);
 
 	puts("Color 2");
 
-	Client client;
+	//Client client;
 	
 
 	if (device.getSensorInfo(SENSOR_DEPTH) != NULL)
@@ -155,6 +171,24 @@ int main(int argc, char** argv) {
 				{
 					depthcv.data = (uchar*)depthFrame.getData();
 					cv::imshow("Depth", depthcv);
+					
+					if (!setDrums) {
+						drum1z = depthcv.at<unsigned short>(drum1y, drum1x);
+						drum2z = depthcv.at<unsigned short>(drum2y, drum2x);
+						setDrums = 1; 
+					}
+					printf("drums %d %d \n", drum1z, drum2z);
+					
+					//printf("Servo: %d, %d \n", servoX, servoY);
+					if (tipX > 0 && tipY > 0) {
+						tipZ = depthcv.at<unsigned short>(tipY, tipX);
+						printf("Dist: %d \n", tipZ);
+					}
+
+					
+					// ^ THIS WORKS
+
+					//printf("Depth frame.");
 				}
 				break;
 
@@ -182,7 +216,31 @@ int main(int argc, char** argv) {
 			default:
 				puts("Error retrieving a stream");
 			}
-			
+
+
+
+			//drum1z = depthcv.at<unsigned short>(drum1y, drum1x);
+			//printf("drum 1 z: %d", drum1z);
+
+			//tipZ = depthcv.at<unsigned short>(tipY, tipX);
+			//printf("Tip Z: %d", tipZ);
+
+			if (tipZ > (drum1z - 50)) {
+				printf("Too low for drum 1.\n");
+			}
+			else if (tipZ < (drum1z - 150)) {
+				printf("Too high for drum 1.\n");
+			}
+
+			if (tipZ >(drum2z - 50)) {
+				printf("Too low for drum 2.\n");
+			}
+			else if (tipZ < (drum2z - 150)) {
+				printf("Too high for drum 2.\n");
+			}
+
+
+
 			// Law of Cosine Calculation to find angles that will correct the servo's position to hit the center of the drum1 and drum2.
 			// Assumes angle from frame and real world will be approx same when mapping from pixels to distances.
 			double a = sqrt(pow((servoX - tipX), 2) + pow((servoY - tipY), 2));
@@ -212,12 +270,14 @@ int main(int argc, char** argv) {
 				theta2 = theta2 * -1;
 			}
 
-			printf("angle to drum one: %f\n", theta1*(180/PI));
-			printf("angle to drum two: %f\n", theta2*(180/PI));
+			//printf("angle to drum one: %f\n", theta1*(180/PI));
+			//printf("angle to drum two: %f\n", theta2*(180/PI));
 
 			// Send the angles in a UDP packet to the specified IP address
-			client.sendAngle1(theta1);
-			client.sendAngle2(theta2);
+			//client.sendAngle1(theta1);
+			//client.sendAngle2(theta2);
+
+
 
 
 			cv::waitKey(1);
@@ -287,7 +347,7 @@ void detectColor(Mat img, int minHue, int minSatur, int minValue, int maxHue, in
 		//Client::sendTheUDP(1.0);
 		
 		// Send the centroid position of Servo if window is Color1
-		if (window == 0) {
+		if (window == 1) {
 			imshow("Threshold Color1", imgBin); //show the thresholded image
 			servoX = posX;
 			servoY = posY;
@@ -320,6 +380,7 @@ void CallBackFunc(int event, int x, int y, int flags, void *ptr) {
 }
 
 void clickDrums(Mat img) {
+	//Mat depthcv) {
 	Point p;
 
 	//Create a window
@@ -340,6 +401,10 @@ void clickDrums(Mat img) {
 
 	cout << "X1:" << drum1x << ", Y1:" << drum1y << endl;
 	cout << "X2:" << drum2x << ", Y2:" << drum2y << endl;
+	
+	//printf("drum 1z: %d", drum1z);
+	//drum2z = depthcv.at<unsigned short>(drum2y, drum2x);
+	
 
 	destroyWindow("Drum Locator");
 }
