@@ -3,7 +3,7 @@
 void Client::sendAngle1(float x) {
  
 	UdpSocket sock;
-	sock.connectTo("128.61.70.169", PORT_NUM);
+	sock.connectTo("192.168.2.4", PORT_NUM);
 	if (!sock.isOk()) {
 		cerr << "Error connection to port " << PORT_NUM << ": " << sock.errorMessage() << "\n";
 	}
@@ -24,7 +24,7 @@ void Client::sendAngle1(float x) {
 void Client::sendAngle2(float x) {
 
 	UdpSocket sock;
-	sock.connectTo("128.61.70.169", PORT_NUM);
+	sock.connectTo("192.168.2.4", PORT_NUM);
 	if (!sock.isOk()) {
 		cerr << "Error connection to port " << PORT_NUM << ": " << sock.errorMessage() << "\n";
 	}

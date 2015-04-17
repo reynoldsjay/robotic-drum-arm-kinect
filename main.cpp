@@ -18,6 +18,7 @@ void clickDrums(Mat img);
 
 // Declare variables for x,y locations of drums, servo, and tip
 int drum1x, drum1y, drum2x, drum2y;
+int drum1Ex, drum1Ey, drum2Ex, drum2Ey, radius1, radius2, rBorderDrum1, rBorderDrum2, lBorderDrum1, lBorderDrum2;
 int servoX, servoY, tipX, tipY;
 
 
@@ -88,12 +89,18 @@ int main(int argc, char** argv) {
 
 	minHue = 65;
 	maxHue = 82;
+	cvSetTrackbarPos("minHue", "Color1", minHue);
+	cvSetTrackbarPos("maxHue", "Color1", maxHue);
 
 	minSatur = 45;
 	maxSatur = 150;
+	cvSetTrackbarPos("minSatur", "Color1", minSatur);
+	cvSetTrackbarPos("maxSatur", "Color1", maxSatur);
 
 	minValue = 201;
 	maxValue = 255;
+	cvSetTrackbarPos("minValue", "Color1", minValue);
+	cvSetTrackbarPos("maxValue", "Color1", maxValue);
 
 	puts("Color1");
 
@@ -120,14 +127,22 @@ int main(int argc, char** argv) {
 	cvCreateTrackbar("minValue", "Color2", &minValue2, 255);//Value (0 - 255)
 	cvCreateTrackbar("maxValue", "Color2", &maxValue2, 255);
 
-	minHue2 = 125;
-	maxHue2 = 145;
+	minHue2 = 103;
+	maxHue2 = 137;
+	cvSetTrackbarPos("minHue", "Color2", minHue2);
+	cvSetTrackbarPos("maxHue", "Color2", maxHue2);
 
-	minSatur2 = 117;
+
+	minSatur2 = 83;
 	maxSatur2 = 255;
+	cvSetTrackbarPos("minSatur", "Color2", minSatur2);
+	cvSetTrackbarPos("maxSatur", "Color2", maxSatur2);
 
-	minValue2 = 136;
+
+	minValue2 = 122;
 	maxValue2 = 255;
+	cvSetTrackbarPos("minValue", "Color2", minValue2);
+	cvSetTrackbarPos("maxValue", "Color2", maxValue2);
 
 	puts("Color 2");
 
@@ -171,6 +186,13 @@ int main(int argc, char** argv) {
 					// Open the first frame of the window to provide locations of drum 1 and 2 by clicking on the frame
 					if (count == 0) {
 						clickDrums(colorcv);
+						radius1 = abs(drum1Ex - drum1x);
+						radius2 = abs(drum2Ex - drum2x);
+						rBorderDrum1 = (drum1x + radius1);
+						rBorderDrum2 = (drum2x + radius2);
+
+						lBorderDrum1 = (drum1x - radius1);
+						lBorderDrum2 = (drum2x - radius2);
 						count++;
 					}
 
@@ -182,42 +204,59 @@ int main(int argc, char** argv) {
 				puts("Error retrieving a stream");
 			}
 			
+
+
+
 			// Law of Cosine Calculation to find angles that will correct the servo's position to hit the center of the drum1 and drum2.
 			// Assumes angle from frame and real world will be approx same when mapping from pixels to distances.
 			double a = sqrt(pow((servoX - tipX), 2) + pow((servoY - tipY), 2));
 
-			double b1 = sqrt(pow((servoX - drum1x), 2) + pow((servoY - drum1y), 2));
-			double c1 = sqrt(pow((tipX - drum1x), 2) + pow((tipY - drum1y), 2));
-			double theta1 = acos((pow(c1, 2) - pow(b1,2) - pow(a,2))/(-2*a*b1));
+			if (( tipX > rBorderDrum1) || (tipX < lBorderDrum1)) {
+				
+				double b1 = sqrt(pow((servoX - drum1x), 2) + pow((servoY - drum1y), 2));
+				double c1 = sqrt(pow((tipX - drum1x), 2) + pow((tipY - drum1y), 2));
+				double theta1 = acos((pow(c1, 2) - pow(b1, 2) - pow(a, 2)) / (-2 * a*b1));
 
-			//printf("color diff: %d \n", servoX - tipX);
-			//printf("%f\n", pow((servoX - tipX), 2));
-			//printf("color 1:  %d, %d \n", servoX, servoY);
-			//printf("color 2:  %d, %d \n", tipX, tipY);
-			//printf("srqrt: %f\n", b1);
+				//printf("color diff: %d \n", servoX - tipX);
+				//printf("%f\n", pow((servoX - tipX), 2));
+				//printf("color 1:  %d, %d \n", servoX, servoY);
+				//printf("color 2:  %d, %d \n", tipX, tipY);
+				//printf("srqrt: %f\n", b1);
 
-			double b2 = sqrt(pow((servoX - drum2x), 2) + pow((servoY - drum2y), 2));
-			double c2 = sqrt(pow((tipX - drum2x), 2) + pow((tipY - drum2y), 2));
-			double theta2 = acos((pow(c2, 2) - pow(b2, 2) - pow(a, 2)) / (-2 * a*b2));
-			//printf("srqrt: %f\n", b2);
-			//printf("%f \n", theta*(180/PI));
+			
+				//printf("srqrt: %f\n", b2);
+				//printf("%f \n", theta*(180/PI));
 
-			// Send the correct angles depending on where the tip is relative to the drum in the x axis.
-			if (drum1x < tipX) {
-				theta1 = theta1 * -1;
+				// Send the correct angles depending on where the tip is relative to the drum in the x axis.
+				if (drum1x < tipX) {
+					theta1 = theta1 * -1;
+				}
+
+				printf("angle to drum one: %f\n", theta1*(180 / PI));
+
+				// Send the angles in a UDP packet to the specified IP address
+				Client::sendAngle1(theta1);
 			}
-			theta2 = theta2 * -1;
-			if (drum2x > tipX) {
+
+			if ((tipX > rBorderDrum2) || (tipX < lBorderDrum2)) {
+				
+				double b2 = sqrt(pow((servoX - drum2x), 2) + pow((servoY - drum2y), 2));
+				double c2 = sqrt(pow((tipX - drum2x), 2) + pow((tipY - drum2y), 2));
+				double theta2 = acos((pow(c2, 2) - pow(b2, 2) - pow(a, 2)) / (-2 * a*b2));
+
+				// Send the correct angles depending on where the tip is relative to the drum in the x axis.
+			
 				theta2 = theta2 * -1;
+				if (drum2x > tipX) {
+					theta2 = theta2 * -1;
+				}
+
+
+				printf("angle to drum two: %f\n", theta2*(180 / PI));
+
+				// Send the angles in a UDP packet to the specified IP address
+				Client::sendAngle2(theta2);
 			}
-
-			printf("angle to drum one: %f\n", theta1*(180/PI));
-			printf("angle to drum two: %f\n", theta2*(180/PI));
-
-			// Send the angles in a UDP packet to the specified IP address
-			Client::sendAngle1(theta1);
-			Client::sendAngle2(theta2);
-
 
 			cv::waitKey(1);
 		}
@@ -286,7 +325,7 @@ void detectColor(Mat img, int minHue, int minSatur, int minValue, int maxHue, in
 		//Client::sendTheUDP(1.0);
 		
 		// Send the centroid position of Servo if window is Color1
-		if (window == 0) {
+		if (window == 1) {
 			imshow("Threshold Color1", imgBin); //show the thresholded image
 			servoX = posX;
 			servoY = posY;
@@ -309,11 +348,25 @@ void CallBackFunc(int event, int x, int y, int flags, void *ptr) {
 		cout << "Left mouse button is clicked while pressing CTRL key - position (" << x << ", " << y << ")" << endl;
 	}
 
+	else if (flags == (EVENT_FLAG_CTRLKEY + EVENT_FLAG_RBUTTON)) {
+		drum1Ex = x;
+		drum1Ey = y;
+		cout << "Right mouse button is clicked while pressing CTRL key - position (" << x << ", " << y << ")" << endl;
+	}
+
+	
+
 	// If Shift and Left mouse is clicked, then save pixel location of mouse to drum2
 	else if (flags == (EVENT_FLAG_LBUTTON + EVENT_FLAG_SHIFTKEY)) {
 		drum2x = x;
 		drum2y= y;
 		cout << "Left mouse button is clicked while pressing SHIFT key - position (" << x << ", " << y << ")" << endl;
+	}
+
+	else if (flags == (EVENT_FLAG_RBUTTON + EVENT_FLAG_SHIFTKEY)) {
+		drum2Ex = x;
+		drum2Ey = y;
+		cout << "Right mouse button is clicked while pressing SHIFT key - position (" << x << ", " << y << ")" << endl;
 	}
 
 }
@@ -330,15 +383,19 @@ void clickDrums(Mat img) {
 	//Display the image
 	imshow("Drum Locator", img);
 
-	cout << "Ctrl + Left click to Store Drum 1's location\r\n";
-	cout << "Shift + Left click to Store Drum 2's location\r\n";
+	cout << "Ctrl + Left click in center of Drum 1's location\r\n";
+	cout << "Ctrl + Right click at edge of Drum 1's location\r\n";
+	cout << "Shift + Left click in center of Drum 2's location\r\n";
+	cout << "Shift + Right click at edge of Drum 2's location\r\n";
 	cout << "When done hit any key\r\n";
 
 	// Wait until user press some key
 	waitKey(0);
 
-	cout << "X1:" << drum1x << ", Y1:" << drum1y << endl;
-	cout << "X2:" << drum2x << ", Y2:" << drum2y << endl;
+	cout << "Center: X1:" << drum1x << ", Y1:" << drum1y << endl;
+	cout << "Center: X2:" << drum2x << ", Y2:" << drum2y << endl;
+	cout << "Edge: X1:" << drum1Ex << ", Y1:" << drum1Ey << endl;
+	cout << "Edge: X2:" << drum2Ex << ", Y2:" << drum2Ey << endl;
 
 	destroyWindow("Drum Locator");
 }
